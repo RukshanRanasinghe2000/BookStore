@@ -1,0 +1,248 @@
+<div class="container">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">
+      <h1><i class="fas fa-book"></i> Books Manager</h1>
+    </div>
+    
+    <nav class="nav-menu">
+      <div class="nav-section">
+        <a class="nav-item active">
+          <span class="icon"><i class="fas fa-book-open"></i></span> Library
+        </a>
+        <a class="nav-item" (click)="openAddModal()">
+          <span class="icon"><i class="fas fa-plus-circle"></i></span> Add Items
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div class="search-bar">
+        <span class="search-icon"><i class="fas fa-search"></i></span>
+        <input 
+          type="text" 
+          placeholder="Start Searching..."
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+        />
+      </div>
+      <div class="user-info">
+        <span>My Library</span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+      <div class="collection-info">
+        <h2>My Books</h2>
+        <span class="count">{{ books().length }}</span>
+      </div>
+      
+      <div class="view-controls">
+        <button 
+          class="view-btn"
+          [class.active]="viewMode() === 'cover'"
+          (click)="viewMode.set('cover')"
+        >
+          <i class="fas fa-th"></i> Cover
+        </button>
+        <button 
+          class="view-btn"
+          [class.active]="viewMode() === 'title'"
+          (click)="viewMode.set('title')"
+        >
+          <i class="fas fa-list"></i> Title
+        </button>
+      </div>
+    </div>
+
+    <!-- Alphabet Filter -->
+    <div class="alphabet-filter">
+      <button 
+        *ngFor="let letter of alphabet"
+        class="letter-btn"
+        [class.active]="selectedLetter() === letter"
+        (click)="selectLetter(letter)"
+      >
+        {{ letter }}
+      </button>
+      <button 
+        class="letter-btn all-btn"
+        [class.active]="selectedLetter() === 'ALL'"
+        (click)="selectLetter('ALL')"
+      >
+        ALL
+      </button>
+    </div>
+
+    <!-- Books Grid -->
+    <div class="books-container">
+      <div *ngFor="let group of groupedBooks()" class="book-group">
+        <h3 class="group-letter">{{ group[0] }}</h3>
+        
+        <div class="books-grid">
+          <div *ngFor="let book of group[1]" class="book-card">
+            <div class="book-cover">
+              <img 
+                [src]="book.coverUrl || 'https://via.placeholder.com/200x300?text=No+Cover'" 
+                [alt]="book.title"
+              />
+              <div class="book-actions">
+                <button class="action-btn edit" (click)="openEditModal(book)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="action-btn delete" (click)="deleteBook(book.id)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="book-info">
+              <h4 class="book-title">{{ book.title }}</h4>
+              <p class="book-author">{{ book.author }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="filteredBooks().length === 0" class="empty-state">
+        <p>No books found</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Book Modal -->
+<div class="modal-overlay" *ngIf="showAddModal()" (click)="closeAddModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Add New Book</h2>
+      <button class="close-btn" (click)="closeAddModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Title *</label>
+        <input 
+          type="text" 
+          [value]="newBook().title"
+          (input)="newBook.update(b => ({...b, title: $any($event.target).value}))"
+          placeholder="Enter book title"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Author *</label>
+        <input 
+          type="text"
+          [value]="newBook().author"
+          (input)="newBook.update(b => ({...b, author: $any($event.target).value}))"
+          placeholder="Enter author name"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Cover URL</label>
+        <input 
+          type="text"
+          [value]="newBook().coverUrl"
+          (input)="newBook.update(b => ({...b, coverUrl: $any($event.target).value}))"
+          placeholder="Enter cover image URL"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Published Year</label>
+        <input 
+          type="number"
+          [value]="newBook().publishedYear"
+          (input)="newBook.update(b => ({...b, publishedYear: +$any($event.target).value}))"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Description</label>
+        <textarea 
+          [value]="newBook().description"
+          (input)="newBook.update(b => ({...b, description: $any($event.target).value}))"
+          placeholder="Enter book description"
+          rows="4"
+        ></textarea>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeAddModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="addBook()">Add Book</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Book Modal -->
+<div class="modal-overlay" *ngIf="showEditModal()" (click)="closeEditModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Edit Book</h2>
+      <button class="close-btn" (click)="closeEditModal()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Title *</label>
+        <input 
+          type="text"
+          [value]="editBook().title"
+          (input)="editBook.update(b => ({...b, title: $any($event.target).value}))"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Author *</label>
+        <input 
+          type="text"
+          [value]="editBook().author"
+          (input)="editBook.update(b => ({...b, author: $any($event.target).value}))"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Cover URL</label>
+        <input 
+          type="text"
+          [value]="editBook().coverUrl"
+          (input)="editBook.update(b => ({...b, coverUrl: $any($event.target).value}))"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Published Year</label>
+        <input 
+          type="number"
+          [value]="editBook().publishedYear"
+          (input)="editBook.update(b => ({...b, publishedYear: +$any($event.target).value}))"
+        />
+      </div>
+      
+      <div class="form-group">
+        <label>Description</label>
+        <textarea 
+          [value]="editBook().description"
+          (input)="editBook.update(b => ({...b, description: $any($event.target).value}))"
+          rows="4"
+        ></textarea>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary" (click)="updateBook()">Update Book</button>
+    </div>
+  </div>
+</div>
