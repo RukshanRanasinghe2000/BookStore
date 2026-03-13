@@ -1,57 +1,64 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 import { Book } from '../models/book.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookService {
-  private books = signal<Book[]>([
-    {
-      id: '1',
-      title: 'Amadeus: A Play',
-      author: 'Peter Shaffer',
-      coverUrl: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=300&h=400&fit=crop',
-      publishedYear: 1979
-    },
-    {
-      id: '2',
-      title: 'Annotated Alice',
-      author: 'Lewis Carroll',
-      coverUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=300&h=400&fit=crop',
-      publishedYear: 1960
-    },
-    {
-      id: '3',
-      title: 'Applied Numerical Analysis',
-      author: 'Curtis F. Gerald',
-      coverUrl: 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=300&h=400&fit=crop',
-      publishedYear: 1989
-    }
-  ]);
+  private apiUrl = `${environment.apiUrl}/books`;
+  private books = signal<Book[]>([]);
+
+  constructor(private http: HttpClient) {
+    this.loadBooks();
+  }
 
   getBooks() {
     return this.books.asReadonly();
   }
 
-  addBook(book: Omit<Book, 'id'>) {
-    const newBook: Book = {
-      ...book,
-      id: Date.now().toString()
-    };
-    this.books.update(books => [...books, newBook]);
+  loadBooks(): void {
+    this.http.get<Book[]>(this.apiUrl).subscribe({
+      next: (books) => this.books.set(books),
+      error: (error) => console.error('Error loading books:', error)
+    });
   }
 
-  updateBook(id: string, book: Partial<Book>) {
-    this.books.update(books =>
-      books.map(b => b.id === id ? { ...b, ...book } : b)
+  addBook(book: Omit<Book, 'id'>): Observable<Book> {
+    return this.http.post<Book>(this.apiUrl, book).pipe(
+      tap(newBook => this.books.update(books => [...books, newBook]))
     );
   }
 
-  deleteBook(id: string) {
-    this.books.update(books => books.filter(b => b.id !== id));
+  updateBook(id: number, book: Partial<Book>): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, { ...book, id }).pipe(
+      tap(() => this.books.update(books =>
+        books.map(b => b.id === id ? { ...b, ...book } : b)
+      ))
+    );
   }
 
-  getBookById(id: string) {
+  deleteBook(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.books.update(books => books.filter(b => b.id !== id)))
+    );
+  }
+
+  getBookById(id: number): Book | undefined {
     return this.books().find(b => b.id === id);
+  }
+
+  uploadImage(id: number, file: File): Observable<{ imageUrl: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/upload-image/${id}`, formData).pipe(
+      tap(response => {
+        this.books.update(books =>
+          books.map(b => b.id === id ? { ...b, imageUrl: response.imageUrl } : b)
+        );
+      })
+    );
   }
 }

@@ -1,0 +1,50 @@
+# Build results
+bin/
+obj/
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Visual Studio
+.vs/
+
+# User-specific files
+*.user
+*.userosscache
+*.suo
+*.rsuser
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# ASP.NET Core
+appsettings.Development.json
+
+# Entity Framework
+Migrations/
+
+# NuGet
+*.nupkg
+packages/
+
+# Dotnet tools
+.dotnet/
+
+# Test results
+TestResults/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Publish output
+publish/
+
+.env

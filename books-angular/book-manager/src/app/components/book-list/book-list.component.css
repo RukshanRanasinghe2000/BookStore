@@ -430,3 +430,159 @@
 .btn-primary:hover {
   background: #1565c0;
 }
+
+/* View Modal Styles */
+.view-modal {
+  max-width: 700px;
+}
+
+.view-modal-body {
+  display: flex;
+  gap: 30px;
+  padding: 30px;
+}
+
+.view-cover {
+  flex-shrink: 0;
+}
+
+.view-cover img {
+  width: 250px;
+  height: 375px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.view-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.view-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-field label i {
+  color: #1976d2;
+}
+
+.view-field p {
+  font-size: 16px;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.book-card {
+  cursor: pointer;
+}
+
+.book-info {
+  cursor: pointer;
+}
+
+@media screen and (max-width: 768px) {
+  .view-modal-body {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .view-cover img {
+    width: 200px;
+    height: 300px;
+  }
+}
+
+/* Image Upload Zone */
+.image-upload-zone {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: #fafafa;
+  cursor: pointer;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-upload-zone.dragging {
+  border-color: #1976d2;
+  background: #e3f2fd;
+}
+
+.upload-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  color: #666;
+}
+
+.upload-placeholder i {
+  font-size: 48px;
+  color: #1976d2;
+}
+
+.upload-placeholder p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.image-preview {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-image-btn:hover {
+  background: #f44336;
+  transform: scale(1.1);
+}
+
+.image-preview .btn {
+  margin-top: 10px;
+}
