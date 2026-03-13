@@ -1,4 +1,4 @@
-# Book Manager - Full Stack Application
+# Books Manager - Full Stack Application
 
 A modern book management system built with Angular 21 and .NET 10, featuring drag-and-drop image uploads and real-time data synchronization.
 
