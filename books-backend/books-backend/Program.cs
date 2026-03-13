@@ -1,11 +1,21 @@
 using books_backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using DotNetEnv;
+
+// Load environment variables from .env file
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add MySQL configuration
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+// Build connection string from environment variables
+var dbServer = Environment.GetEnvironmentVariable("DB_SERVER") ?? "localhost";
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT") ?? "3306";
+var dbName = Environment.GetEnvironmentVariable("DB_NAME") ?? "booksdb";
+var dbUser = Environment.GetEnvironmentVariable("DB_USER") ?? "root";
+var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "1234";
+
+var connectionString = $"server={dbServer};port={dbPort};database={dbName};user={dbUser};password={dbPassword}";
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));

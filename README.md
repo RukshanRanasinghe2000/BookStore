@@ -208,13 +208,40 @@ curl -X POST http://localhost:5161/api/books/upload-image/1 \
 
 ### Backend Configuration
 
-**File:** `books-backend/books-backend/appsettings.json`
+The backend uses environment variables for sensitive data like database credentials.
 
+**Step 1: Create .env file**
+
+Copy the example file and update with your credentials:
+
+```bash
+cd books-backend/books-backend
+cp .env.example .env
+```
+
+**Step 2: Edit .env file**
+
+```env
+# Database Configuration
+DB_SERVER=localhost
+DB_PORT=3306
+DB_NAME=booksdb
+DB_USER=your_username
+DB_PASSWORD=your_password
+```
+
+**Note:** The .env file is gitignored and should never be committed to version control.
+
+**appsettings.json** (No sensitive data):
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;port=3306;database=booksdb;user=root;password=1234"
-  }
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
 }
 ```
 
